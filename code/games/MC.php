@@ -37,19 +37,14 @@ function query( $ip, $port )
 			$mapname = "-";
 		
 		if ( !$players = $Info[ 'Players' ] )
-			$players = "-";
+			$players = "0";
 		
 		if ( !$maxplayers = $Info[ 'MaxPlayers' ] )
 			$maxplayers = "-";
-		
-		
-		if ( $players == "-" ) {
-			$newplayers = $Query->GetPlayers();
+	
+		if ( count( $newplayers ) )
+			$players = count( $newplayers );
 			
-			if ( count( $newplayers ) )
-				$players = count( $newplayers );
-		}
-		
 		$data = array(
 			 "value" => "1",
 			"hostname" => cleanHostname( $hostname ),
@@ -79,21 +74,12 @@ function cleanHostname( $name )
 	
 	for ( $i = 0; $i < 10; $i++ )
 		$hostname = str_replace( "&{$i}", "", $hostname );
-	
-	$hostname = str_replace( "&a", "", $hostname );
-	$hostname = str_replace( "&b", "", $hostname );
-	$hostname = str_replace( "&c", "", $hostname );
-	$hostname = str_replace( "&d", "", $hostname );
-	$hostname = str_replace( "&e", "", $hostname );
-	$hostname = str_replace( "&f", "", $hostname );
-	
-	$hostname = str_replace( "&k", "", $hostname );
-	$hostname = str_replace( "&l", "", $hostname );
-	$hostname = str_replace( "&m", "", $hostname );
-	$hostname = str_replace( "&n", "", $hostname );
-	$hostname = str_replace( "&o", "", $hostname );
-	
-	$hostname = str_replace( "&r", "", $hostname );
+		$hostname = str_replace( "§{$i}", "", $hostname );
+		$letter_array = array("a", "b", "c", "d", "e", "f", "k", "l", "m", "n", "o", "r");
+		foreach ($letter_array as $key) {
+			$hostname = str_replace( "&".$key."", "", $hostname );
+			$hostname = str_replace( "§".$key."", "", $hostname );	
+		}
 	
 	return $hostname;
 }
