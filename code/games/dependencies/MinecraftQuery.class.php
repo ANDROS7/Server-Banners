@@ -1,7 +1,7 @@
 <?php
 class MinecraftQueryException extends Exception
 {
-  // Exception thrown by MinecraftQuery class
+	// Exception thrown by MinecraftQuery class
 }
 
 class MinecraftQuery
@@ -9,7 +9,7 @@ class MinecraftQuery
 	/*
 	 * Class written by xPaw
 	 *
-	 * Website: http://xpaw.ru
+	 * Website: http://xpaw.me
 	 * GitHub: https://github.com/xPaw/PHP-Minecraft-Query
 	 */
 	
@@ -70,7 +70,7 @@ class MinecraftQuery
 		
 		if( $Data === false )
 		{
-			throw new MinecraftQueryException( "Failed to receive challenge." );
+			throw new MinecraftQueryException( 'Failed to receive challenge.' );
 		}
 		
 		return Pack( 'N', $Data );
@@ -82,14 +82,20 @@ class MinecraftQuery
 		
 		if( !$Data )
 		{
-			throw new MinecraftQueryException( "Failed to receive status." );
+			throw new MinecraftQueryException( 'Failed to receive status.' );
 		}
 		
-		$Last = "";
+		$Last = '';
 		$Info = Array( );
 		
 		$Data    = SubStr( $Data, 11 ); // splitnum + 2 int
 		$Data    = Explode( "\x00\x00\x01player_\x00\x00", $Data );
+		
+		if( Count( $Data ) !== 2 )
+		{
+			throw new MinecraftQueryException( 'Failed to parse server\'s response.' );
+		}
+		
 		$Players = SubStr( $Data[ 1 ], 0, -2 );
 		$Data    = Explode( "\x00", $Data[ 0 ] );
 		
@@ -104,7 +110,8 @@ class MinecraftQuery
 			'numplayers' => 'Players',
 			'maxplayers' => 'MaxPlayers',
 			'hostport'   => 'HostPort',
-			'hostip'     => 'HostIp'
+			'hostip'     => 'HostIp',
+			'game_id'    => 'GameName'
 		);
 		
 		foreach( $Data as $Key => $Value )
@@ -118,7 +125,7 @@ class MinecraftQuery
 				}
 				
 				$Last = $Keys[ $Value ];
-				$Info[ $Last ] = "";
+				$Info[ $Last ] = '';
 			}
 			else if( $Last != false )
 			{
@@ -167,7 +174,7 @@ class MinecraftQuery
 			throw new MinecraftQueryException( "Failed to write on socket." );
 		}
 		
-		$Data = FRead( $this->Socket, 2048 );
+		$Data = FRead( $this->Socket, 4096 );
 		
 		if( $Data === false )
 		{
